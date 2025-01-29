@@ -1,5 +1,6 @@
 const fs = require("fs");
 const http = require("http");
+const { parsePath } = require("react-router-dom");
 const url = require("url");
 
 //////////////////
@@ -35,29 +36,69 @@ const url = require("url");
 // SERVER
 
 // This code is not blocking, data will be loaded when you enter the page, but all request are asynchronous
+const replaceTemplate = (temp, product) => {
+  let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
+  output = output.replace(/{%IMAGE%}/g, product.image);
+  output = output.replace(/{%PRICE%}/g, product.price);
+  output = output.replace(/{%PRODUCTNUTRIENTSNAME%}/g, product.nutrients);
+  output = output.replace(/{%QUANTITY%}/g, product.quantity);
+  output = output.replace(/{%DESCRIPTION%}/g, product.description);
+  output = output.replace(/{%ID%}/g, product.id);
+
+  if (!product.organic)
+    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
+  return output;
+};
+
+const tempOverview = fs.readFileSync(
+  `${__dirname}/templates/template-overview.html`,
+  "utf-8"
+);
+const tempCard = fs.readFileSync(
+  `${__dirname}/templates/template-card.html`,
+  "utf-8"
+);
+const tempProduct = fs.readFileSync(
+  `${__dirname}/templates/product.html`,
+  "utf-8"
+);
+
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  // This has to be gone if we want to do if/else with routing
-  // res.end("Hello from the server!");
+  //it is for reading differences in query, for eg /product?id=0, /product is defined but id is not as pathname
+  const { query, pathname } = url.parse(req.url, true);
 
-  const pathName = req.url;
+  // Overwier Page
+  if (pathname === "/" || pathname === "/overview") {
+    res.writeHead(200, { "Content-type": "text/html" });
+    const cardsHtml = dataObj
+      .map((el) => replaceTemplate(tempCard, el))
+      .join("");
 
-  if (pathName === "/" || pathName === "/overview") {
-    res.end("This is OVERWIEW");
-  } else if (pathName === "/product") {
-    res.end("This is product");
-  } else if (pathName === "/api") {
-    res.writeHead(200, { "Contect-type": "application/json" });
+    const output = tempOverview.replace("{%PRODUCT_CARDS%}", cardsHtml);
+    res.end(output);
+
+    // Product Page
+  } else if (pathname === "/product") {
+    res.writeHead(200, { "Content-type": "text/html" });
+    //easiest way to get element based on query string
+    const product = dataObj[query.id];
+    const output = replaceTemplate(tempProduct, product);
+    res.end(output);
+
+    // Api
+  } else if (pathname === "/api") {
+    res.writeHead(200, { "Content-type": "application/json" });
     res.end(data);
+
+    // Not found
   } else {
-    // 404 error and header, specified as html
     res.writeHead(404, {
       "Content-type": "text/html",
       "my-own-header": "hello-world",
     });
-    // Headers have to be set before we send contect to server
     res.end("<h1>Page not found!</h1>");
   }
 });
