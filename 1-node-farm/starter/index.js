@@ -1,7 +1,13 @@
+//Core modules
+
 const fs = require("fs");
 const http = require("http");
 const { parsePath } = require("react-router-dom");
 const url = require("url");
+
+// Our modules ( always after core modules )
+
+const replaceTemplate = require("./modules/replaceTemplate");
 
 //////////////////
 
@@ -36,19 +42,19 @@ const url = require("url");
 // SERVER
 
 // This code is not blocking, data will be loaded when you enter the page, but all request are asynchronous
-const replaceTemplate = (temp, product) => {
-  let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
-  output = output.replace(/{%IMAGE%}/g, product.image);
-  output = output.replace(/{%PRICE%}/g, product.price);
-  output = output.replace(/{%PRODUCTNUTRIENTSNAME%}/g, product.nutrients);
-  output = output.replace(/{%QUANTITY%}/g, product.quantity);
-  output = output.replace(/{%DESCRIPTION%}/g, product.description);
-  output = output.replace(/{%ID%}/g, product.id);
+// const replaceTemplate = (temp, product) => {
+//   let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
+//   output = output.replace(/{%IMAGE%}/g, product.image);
+//   output = output.replace(/{%PRICE%}/g, product.price);
+//   output = output.replace(/{%PRODUCTNUTRIENTSNAME%}/g, product.nutrients);
+//   output = output.replace(/{%QUANTITY%}/g, product.quantity);
+//   output = output.replace(/{%DESCRIPTION%}/g, product.description);
+//   output = output.replace(/{%ID%}/g, product.id);
 
-  if (!product.organic)
-    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
-  return output;
-};
+//   if (!product.organic)
+//     output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
+//   return output;
+// };
 
 const tempOverview = fs.readFileSync(
   `${__dirname}/templates/template-overview.html`,
