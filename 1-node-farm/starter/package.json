@@ -1,0 +1,12 @@
+{
+  "name": "node-farm",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Bartosz Chmielecki",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
