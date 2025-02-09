@@ -5,6 +5,10 @@ const http = require("http");
 const { parsePath } = require("react-router-dom");
 const url = require("url");
 
+// 3rd Party Modules
+
+const slugify = require("slugify");
+
 // Our modules ( always after core modules )
 
 const replaceTemplate = require("./modules/replaceTemplate");
@@ -71,6 +75,13 @@ const tempProduct = fs.readFileSync(
 
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
+
+// This is now dependecny because code wouldn't work without this package. Project depends on it
+const slugs = dataObj.map((el) =>
+  slugify(el.productName, { lower: true, replacement: "-" })
+);
+
+console.log(slugify("Fresh Avocados", { lower: true, replacement: "-" }));
 
 const server = http.createServer((req, res) => {
   //it is for reading differences in query, for eg /product?id=0, /product is defined but id is not as pathname
