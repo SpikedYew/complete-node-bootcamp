@@ -3,38 +3,52 @@ const express = require("express");
 const app = express();
 const path = require("path");
 
-//Module that loads enviroment variables from .env file intro process.env
 require("dotenv").config();
 
-/*
-To serve static files such as images, CSS files, and JavaScript files, use the express.static built-in middleware function in Express.
-Middleware functions can perform the following tasks:
-- Execute any code.
-- Make changes to the request and the response objects.
-- End the request-response cycle.
-- Call the next middleware function in the stack.
-*/
-
-//With this we don't need to write public in files that we want to make routes for
 app.use("/", express.static(path.join(__dirname + "/public")));
 
-//This creates error
-// app.use("/json", express.static(path.join(__dirname + "/public")));
+app.use(
+  "/app",
+  (req, res, next) => {
+    req.time = new Date().toString();
+    req.hm = req.params;
 
-// Route 1
+    next();
+  },
+  (req, res) => {
+    res.send({
+      "Cur Time": req.time,
+    });
+    console.log(req.hm);
+  }
+);
+
+// this is setting params for eg word is a param
+/*
+route_path: '/user/:userId/book/:bookId'
+actual_request_URL: '/user/546/book/6754'
+req.params: {userId: '546', bookId: '6754'}
+
+This is info for egzample that someone wants to fetch from our api route_path is a param route parameter
+*/
+app.get("/:word/echo", (req, res) => {
+  const { word } = req.params;
+
+  res.json({
+    echo: word,
+  });
+});
+app.get("/app", (req, res) => {});
 app.get("/", (req, res) => {
   res.sendFile("index.html");
 });
 
-// Route 2
 app.get("/json", (req, res) => {
   if (process.env.MESSAGE_STYLE === "uppercase") {
     res.json({ message: "HELLO JSON" });
   } else {
-    // res.json({ message: "Hello json" });
     res.sendFile(__dirname + "/public/index.html");
   }
 });
 
-// Starting server
 app.listen(3000, (req, res) => {});
