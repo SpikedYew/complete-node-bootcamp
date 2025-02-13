@@ -11,7 +11,15 @@
     "start": "nodemon server.js"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.0.6",
+    "body-parser": "^1.20.3",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "mongoose": "^8.10.0",
+    "postcss-cli": "^11.0.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.2"
   }
 }
